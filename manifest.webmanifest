@@ -1,12 +1,12 @@
 {
-  "name": "Daily Compass \u2013 Personal Routine",
-  "short_name": "Daily Compass",
+  "name": "Personal Routine Tracker",
+  "short_name": "My Routine",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0b1220",
   "theme_color": "#101827",
-  "description": "Track Salah, SAMATIC work, family, health and personal development.",
+  "description": "A simple personal routine tracker for Salah, SAMATIC, family, health and Quran.",
   "icons": [
     {
       "src": "icon.svg",

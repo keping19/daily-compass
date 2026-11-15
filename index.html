@@ -11,8 +11,9 @@
 <style>
 :root{color-scheme:dark;--bg:#0b1220;--panel:#121d2e;--panel2:#18263a;--line:#26364c;--text:#edf3fb;--muted:#9aabc0;--accent:#8bd4b0;--accent2:#c0e8d5;--warn:#f3c982;--radius:18px}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0d1728,#09111d 55%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{padding:22px 18px 12px;max-width:900px;margin:auto} .eyebrow{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.13em;font-weight:700}
-h1{font-size:28px;line-height:1.1;margin:7px 0 5px}h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:0}
+header{padding:14px 18px 8px;max-width:900px;margin:auto;text-align:center} .eyebrow{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:650}
+h1{font-size:25px;line-height:1.15;margin:9px 0 5px}
+.date-title{font-size:25px;font-weight:750;letter-spacing:-.03em;margin:10px 0 2px}.current-card{padding:20px 18px}.current-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:750}.current-task-row{display:flex;align-items:flex-start;gap:13px;margin-top:12px}.current-task-row input{width:25px;height:25px;flex:0 0 25px;margin-top:3px;accent-color:var(--accent)}.current-task-name{font-size:21px;line-height:1.25;font-weight:750}.next-task{font-size:13px;color:var(--muted);margin:13px 0 0 38px;line-height:1.4}.task-time{font-size:12px;color:var(--muted);margin-top:5px}h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:0}
 .sub{color:var(--muted);font-size:13px}.wrap{max-width:900px;margin:auto;padding:0 14px 100px}
 .tabs{display:flex;gap:8px;overflow:auto;padding:8px 0 14px}.tab{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:9px 15px;white-space:nowrap;font-weight:650}.tab.active{background:var(--accent);border-color:var(--accent);color:#092016}
 .card{background:rgba(18,29,46,.94);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:10px 0;box-shadow:0 8px 30px #0002}
@@ -31,17 +32,22 @@ button{font:inherit;cursor:pointer}.primary{background:var(--accent);color:#0920
 </head>
 <body>
 <header>
- <div class="eyebrow">Personal productivity · version 1</div>
- <div class="row"><div><h1>Daily Compass</h1><div class="sub" id="todayLabel"></div></div><button class="ghost" id="installBtn" hidden>Install app</button></div>
+ <div class="eyebrow">Personal productivity · version 1.1</div>
+ <div class="date-title" id="todayLabel"></div>
+ <button class="ghost" id="installBtn" hidden>Install app</button>
 </header>
 <main class="wrap">
  <nav class="tabs">
   <button class="tab active" data-tab="today">Today</button><button class="tab" data-tab="routine">Routine</button><button class="tab" data-tab="reports">Weekly review</button><button class="tab" data-tab="settings">Settings</button>
  </nav>
  <section id="today">
+  <div class="card current-card">
+   <div class="current-label">Current task · <span id="currentTaskTime">—</span></div>
+   <div class="current-task-row"><input type="checkbox" id="currentTaskCheck" aria-label="Mark current task complete"><div><div class="current-task-name" id="currentTaskName">Loading today's task…</div><div class="task-time" id="currentDayType"></div></div></div>
+   <div class="next-task" id="nextTaskText">Next: —</div>
+  </div>
   <div class="card">
-   <div class="row"><div><h2>Today's focus</h2><div class="sub" id="dayTypeText">Workshop day</div></div><select id="dayType" style="max-width:145px"><option value="workshop">Workshop</option><option value="field">Field</option><option value="weekend">Weekend / off</option></select></div>
-   <div class="grid four" style="margin-top:14px">
+   <div class="grid four">
     <div class="stat"><strong id="doneCount">0/0</strong><span>Habits checked</span></div>
     <div class="stat"><strong id="businessHours">0.0h</strong><span>Business logged</span></div>
     <div class="stat"><strong id="familyMinutes">0m</strong><span>Family time</span></div>
@@ -89,7 +95,7 @@ button{font:inherit;cursor:pointer}.primary{background:var(--accent);color:#0920
   <div class="card"><h2>Backup & privacy</h2><p class="small">Export a JSON backup of your daily logs and settings. The app does not send your data to a server.</p><button class="ghost" id="exportBtn">Export my data</button> <button class="ghost" id="clearBtn">Clear all local data</button></div>
   <div class="card"><h2>Install on Android</h2><p class="small">After hosting this folder on an HTTPS website, open it in Chrome → menu (⋮) → Add to Home screen / Install app. Offline support becomes available after the first visit.</p></div>
  </section>
- <div class="footer">Daily Compass · Personal use · Your data stays in this browser</div>
+ <div class="footer">Personal use · Your data stays in this browser</div>
 </main>
 <script>
 const KEY='dailyCompassV1';
@@ -99,7 +105,7 @@ function load(){try{return {...defaults,...JSON.parse(localStorage.getItem(KEY)|
 function persist(){localStorage.setItem(KEY,JSON.stringify(data))}
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dayTypeFor(d){let day=d.getDay();if(day===0||day===6)return'weekend';return [1,3,5].includes(day)?'workshop':'field'}
-function blank(type){return {type,habits:{},prayers:{},businessHours:'',salesOutcome:'',businessNote:'',childrenTime:'',wifeTime:'',exerciseTime:'',sleepHours:'',scrollTime:'',quranTime:'',reflection:''}}
+function blank(type){return {type,habits:{},taskDone:{},prayers:{},businessHours:'',salesOutcome:'',businessNote:'',childrenTime:'',wifeTime:'',exerciseTime:'',sleepHours:'',scrollTime:'',quranTime:'',reflection:''}}
 function todayLog(){return data.logs[currentDate]||(data.logs[currentDate]=blank(dayTypeFor(new Date())))}
 function setVal(id,v){document.getElementById(id).value=v??''}
 function getVal(id){return document.getElementById(id).value}
@@ -109,17 +115,24 @@ workshop:[['5:10–5:55','Wake, Fajr at masjid'],['5:55–7:00','Return to sleep
 field:[['5:10–5:55','Wake, Fajr at masjid'],['5:55–7:00','Return to sleep / rest'],['7:00–8:25','Exercise, breakfast and family'],['8:30–9:00','School drop-off and return'],['9:00–9:45','Prospect research, calls and route planning'],['9:45–12:45','Builder visits and client meetings'],['12:45–1:40','Dhuhr and lunch'],['1:40–3:00','Nearby meetings or return journey'],['3:00–3:35','School pickup and return'],['3:35–4:30','Quotations, CRM and follow-ups'],['4:30–5:05','Asr'],['5:05–5:35','Sales follow-ups and next actions'],['5:35–6:10','Maghrib'],['6:10–8:00','Children, dinner and family'],['8:00–8:40','Isha'],['8:40–9:00','Dedicated time with wife'],['9:00–9:15','Quran reading'],['9:15–9:30','Daily review and bedtime']],
 weekend:[['5:10–5:55','Fajr at masjid'],['5:55–7:30','Return to sleep / rest'],['7:30–8:15','Exercise and personal care'],['8:15–10:00','Family breakfast and children'],['10:00–11:30','Groceries, errands and household responsibilities'],['11:30–12:45','Family activity or outing'],['12:45–1:40','Dhuhr and lunch'],['1:40–3:30','Rest, family and baby care'],['3:30–4:25','Optional weekly planning / personal time'],['4:25–5:05','Asr'],['5:05–5:35','Children or personal time'],['5:35–6:10','Maghrib'],['6:10–8:00','Family and dinner'],['8:00–8:40','Isha'],['8:40–9:00','Dedicated time with wife'],['9:00–9:15','Quran reading'],['9:15–9:30','Reflection and bedtime']]
 };
-function render(){let log=todayLog();document.getElementById('todayLabel').textContent=new Date(currentDate+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});setVal('dayType',log.type);document.getElementById('dayTypeText').textContent=({workshop:'Design, printing, production and assembly',field:'Builder visits, sales and client meetings',weekend:'Family, rest and optional weekly planning'})[log.type];
+function render(){let log=todayLog();document.getElementById('todayLabel').textContent=new Date(currentDate+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
 document.getElementById('habitList').innerHTML=habits.map(([k,label])=>`<div class="task"><input type="checkbox" data-habit="${k}" ${log.habits[k]?'checked':''}><span>${label}</span>${['Fajr','Dhuhr','Asr','Maghrib','Isha'].includes(k)?'<span class="meta">Salah</span>':''}</div>`).join('');
 ['businessHours','salesOutcome','businessNote','childrenTime','wifeTime','exerciseTime','sleepHours','scrollTime','quranTime','reflection'].forEach(k=>setVal(k,log[k]));
-renderStats();renderRoutine();renderReport();renderSettings()}
+renderCurrentTask();renderStats();renderRoutine();renderReport();renderSettings()}
+function timeToMinutes(t){let [h,m]=t.split(':').map(Number);return h*60+m}
+function scheduleIntervals(type){let previousStart=-1,offset=0;return schedules[type].map(([range,task],index)=>{let [a,b]=range.split('–');let start=timeToMinutes(a),end=timeToMinutes(b);if(start<previousStart)offset+=720;start+=offset;end+=offset;if(end<=start)end+=720;previousStart=timeToMinutes(a);return {index,start,end,range,task}})}
+function renderCurrentTask(){let log=todayLog(),type=dayTypeFor(new Date(currentDate+'T12:00:00')),items=scheduleIntervals(type),now=new Date(),minutes=now.getHours()*60+now.getMinutes();let active=items.find(x=>minutes>=x.start&&minutes<x.end);let next=items.find(x=>x.start>minutes);let current=active;
+if(!current){if(next){current={task:'Rest / flexible time',range:'Until '+next.range.split('–')[0],index:null};}else{current={task:'Your scheduled day is complete',range:'Well done',index:null};}}
+document.getElementById('currentTaskName').textContent=current.task;document.getElementById('currentTaskTime').textContent=current.range;document.getElementById('currentDayType').textContent=({workshop:'Workshop day',field:'Field day',weekend:'Weekend · off'})[type];
+let check=document.getElementById('currentTaskCheck');check.disabled=current.index===null;check.checked=current.index!==null&&!!(log.taskDone&&log.taskDone[current.index]);check.onchange=()=>{log.taskDone=log.taskDone||{};log.taskDone[current.index]=check.checked;persist()};
+document.getElementById('nextTaskText').textContent=next?'Next: '+next.task+' · '+next.range:'Next: No more scheduled activities today';}
 function renderStats(){let l=todayLog(),checked=habits.filter(([k])=>l.habits[k]).length;document.getElementById('doneCount').textContent=checked+'/'+habits.length;document.getElementById('businessHours').textContent=(Number(l.businessHours)||0).toFixed(1)+'h';document.getElementById('familyMinutes').textContent=((Number(l.childrenTime)||0)+(Number(l.wifeTime)||0))+'m';document.getElementById('scrollMinutes').textContent=(Number(l.scrollTime)||0)+'m';document.getElementById('progressBar').style.width=(checked/habits.length*100)+'%';document.getElementById('progressText').textContent=checked===habits.length?'All tracked habits checked. Well done.':`${checked} of ${habits.length} tracked habits completed. A partial day still counts.`}
 function renderRoutine(){let p=data.prayers;document.getElementById('prayerTimes').innerHTML=Object.entries(p).map(([k,v])=>`<div class="row" style="padding:8px 0;border-bottom:1px solid #26364c"><span>${k}</span><strong>${v}</strong></div>`).join('');let t=getVal('routineType')||'workshop';document.getElementById('scheduleList').innerHTML=schedules[t].map(([time,task])=>`<div class="activity"><div class="time">${time}</div><div><h3>${task}</h3></div></div>`).join('')}
 function renderReport(){let days=Array.from({length:7},(_,i)=>{let d=new Date();d.setDate(d.getDate()-6+i);return iso(d)}),logs=days.map(d=>data.logs[d]||blank(dayTypeFor(new Date(d+'T12:00:00'))));let sum=k=>logs.reduce((a,l)=>a+(Number(l[k])||0),0);document.getElementById('weekBusiness').textContent=sum('businessHours').toFixed(1)+'h';document.getElementById('weekFamily').textContent=(sum('childrenTime')+sum('wifeTime'))+'m';let pc=logs.reduce((a,l)=>a+['Fajr','Dhuhr','Asr','Maghrib','Isha'].filter(k=>l.habits[k]).length,0);document.getElementById('weekPrayer').textContent=pc+'/35';document.getElementById('weekDays').innerHTML=days.map((d,i)=>{let l=logs[i],n=habits.filter(([k])=>l.habits[k]).length;return `<div class="row" style="padding:8px 0;border-bottom:1px solid #26364c"><span>${new Date(d+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</span><span class="small">${l.type} · ${n}/${habits.length} habits · ${Number(l.businessHours)||0}h work</span></div>`}).join('');setVal('weeklyNote',data.weeklyNote)}
 function renderSettings(){Object.entries(data.prayers).forEach(([k,v])=>setVal('p'+k,v));setVal('pBed',data.bed)}
 function saveToday(){let l=todayLog();document.querySelectorAll('[data-habit]').forEach(x=>l.habits[x.dataset.habit]=x.checked);['businessHours','salesOutcome','businessNote','childrenTime','wifeTime','exerciseTime','sleepHours','scrollTime','quranTime','reflection'].forEach(k=>l[k]=getVal(k));persist();renderStats();document.getElementById('saveStatus').textContent='Saved on this device · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));['today','routine','reports','settings'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==b.dataset.tab));if(b.dataset.tab==='reports')renderReport();if(b.dataset.tab==='routine')renderRoutine()}));
-document.getElementById('dayType').addEventListener('change',e=>{todayLog().type=e.target.value;persist();render()});
+
 document.getElementById('routineType').addEventListener('change',renderRoutine);
 document.getElementById('saveBtn').addEventListener('click',saveToday);
 document.getElementById('saveWeekly').addEventListener('click',()=>{data.weeklyNote=getVal('weeklyNote');persist();alert('Weekly reflection saved on this device.')});
@@ -130,5 +143,7 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPro
 document.getElementById('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('installBtn').hidden=true});
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){currentDate=iso(new Date());renderCurrentTask();}});
+setInterval(renderCurrentTask,60000);
 </script>
 </body></html>
