@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="description" content="A personal routine and productivity tracker for Salah, SAMATIC, family, health and Quran.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Daily Compass</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121d2e;--panel2:#18263a;--line:#26364c;--text:#edf3fb;--muted:#9aabc0;--accent:#8bd4b0;--accent2:#c0e8d5;--warn:#f3c982;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0d1728,#09111d 55%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:22px 18px 12px;max-width:900px;margin:auto} .eyebrow{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.13em;font-weight:700}
+h1{font-size:28px;line-height:1.1;margin:7px 0 5px}h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:0}
+.sub{color:var(--muted);font-size:13px}.wrap{max-width:900px;margin:auto;padding:0 14px 100px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:8px 0 14px}.tab{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:9px 15px;white-space:nowrap;font-weight:650}.tab.active{background:var(--accent);border-color:var(--accent);color:#092016}
+.card{background:rgba(18,29,46,.94);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:10px 0;box-shadow:0 8px 30px #0002}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:13px}.stat strong{font-size:22px;display:block}.stat span{font-size:12px;color:var(--muted)}
+select,input,textarea{font:inherit;color:var(--text);background:#0d1727;border:1px solid var(--line);border-radius:11px;padding:10px;width:100%}
+label{display:block;color:var(--muted);font-size:12px;margin:10px 0 5px}
+button{font:inherit;cursor:pointer}.primary{background:var(--accent);color:#092016;border:0;border-radius:12px;padding:11px 15px;font-weight:750}.ghost{background:#1a2a40;border:1px solid var(--line);color:var(--text);border-radius:11px;padding:9px 12px}
+.task{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #26364c}.task:last-child{border:0}.task input{width:20px;height:20px;accent-color:#8bd4b0}.task .meta{margin-left:auto;color:var(--muted);font-size:12px;white-space:nowrap}
+.bar{height:9px;border-radius:99px;background:#26364c;overflow:hidden;margin:10px 0}.bar>i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.pill{font-size:11px;color:var(--accent2);background:#1d3a34;padding:4px 8px;border-radius:99px}
+.activity{display:grid;grid-template-columns:95px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid #26364c}.activity:last-child{border:0}.time{color:var(--accent2);font-variant-numeric:tabular-nums;font-size:13px;font-weight:700}.activity p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.small{font-size:12px;color:var(--muted)}.hidden{display:none!important}.footer{color:var(--muted);font-size:11px;text-align:center;padding:20px 0}.notice{border-left:3px solid var(--warn);padding:9px 12px;background:#352b1c55;color:#e8d6b6;border-radius:8px;font-size:12px}
+@media(min-width:650px){.grid.four{grid-template-columns:repeat(4,1fr)}.grid.three{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header>
+ <div class="eyebrow">Personal productivity · version 1</div>
+ <div class="row"><div><h1>Daily Compass</h1><div class="sub" id="todayLabel"></div></div><button class="ghost" id="installBtn" hidden>Install app</button></div>
+</header>
+<main class="wrap">
+ <nav class="tabs">
+  <button class="tab active" data-tab="today">Today</button><button class="tab" data-tab="routine">Routine</button><button class="tab" data-tab="reports">Weekly review</button><button class="tab" data-tab="settings">Settings</button>
+ </nav>
+ <section id="today">
+  <div class="card">
+   <div class="row"><div><h2>Today's focus</h2><div class="sub" id="dayTypeText">Workshop day</div></div><select id="dayType" style="max-width:145px"><option value="workshop">Workshop</option><option value="field">Field</option><option value="weekend">Weekend / off</option></select></div>
+   <div class="grid four" style="margin-top:14px">
+    <div class="stat"><strong id="doneCount">0/0</strong><span>Habits checked</span></div>
+    <div class="stat"><strong id="businessHours">0.0h</strong><span>Business logged</span></div>
+    <div class="stat"><strong id="familyMinutes">0m</strong><span>Family time</span></div>
+    <div class="stat"><strong id="scrollMinutes">0m</strong><span>Scrolling</span></div>
+   </div>
+   <div class="bar"><i id="progressBar"></i></div><div class="small" id="progressText">Start with one important action.</div>
+  </div>
+  <div class="card"><div class="row"><h2>Daily essentials</h2><span class="pill">Progress, not perfection</span></div><div id="habitList"></div></div>
+  <div class="card">
+   <h2>Business work log</h2><div class="grid">
+    <div><label for="businessHoursInput">Focused business hours</label><input id="businessHoursInput" type="number" min="0" max="24" step=".25" placeholder="e.g. 6.5"></div>
+    <div><label for="salesOutcome">Sales outcome / activity</label><input id="salesOutcome" placeholder="e.g. 2 builder meetings"></div>
+   </div>
+   <label for="businessNote">Design / production notes</label><textarea id="businessNote" rows="2" placeholder="What moved forward at SAMATIC?"></textarea>
+  </div>
+  <div class="card">
+   <h2>Family, health & distractions</h2><div class="grid">
+    <div><label for="childrenTime">Children time (minutes)</label><input id="childrenTime" type="number" min="0" placeholder="120"></div>
+    <div><label for="wifeTime">Wife time (minutes)</label><input id="wifeTime" type="number" min="0" placeholder="20"></div>
+    <div><label for="exerciseTime">Exercise (minutes)</label><input id="exerciseTime" type="number" min="0" placeholder="30"></div>
+    <div><label for="sleepHours">Sleep (hours, total)</label><input id="sleepHours" type="number" min="0" max="24" step=".25" placeholder="7.5"></div>
+    <div><label for="scrollTime">Social media / scrolling (minutes)</label><input id="scrollTime" type="number" min="0" placeholder="30"></div>
+    <div><label for="quranTime">Quran (minutes)</label><input id="quranTime" type="number" min="0" placeholder="15"></div>
+   </div>
+   <label for="reflection">Daily review — what went well, what didn't, what changes tomorrow?</label><textarea id="reflection" rows="3" placeholder="A few honest lines are enough."></textarea>
+   <button class="primary" id="saveBtn" style="margin-top:12px;width:100%">Save today's log</button><div class="small" id="saveStatus" style="margin-top:8px"></div>
+  </div>
+  <div class="notice">Your data is saved on this device in this browser. Clearing browser data or switching devices can remove or separate your records. Export a backup in Settings.</div>
+ </section>
+ <section id="routine" class="hidden">
+  <div class="card"><h2>Prayer anchors</h2><div class="sub">Approximate local masjid Jamaat times — adjust seasonally.</div><div id="prayerTimes"></div></div>
+  <div class="card"><div class="row"><h2>Schedule template</h2><select id="routineType" style="max-width:150px"><option value="workshop">Workshop day</option><option value="field">Field day</option><option value="weekend">Weekend / off</option></select></div><div id="scheduleList"></div></div>
+  <div class="card"><h2>Routine principles</h2><ul class="small"><li>School drop-off: leave at 8:30 AM; return around 9:00 AM.</li><li>School pickup: leave around 3:00 PM; home around 3:30 PM.</li><li>Field appointments should be close enough to protect pickup.</li><li>Weekend is family-first, with optional planning only.</li><li>Use flexible sleep and rest around night wakings with the baby.</li></ul></div>
+ </section>
+ <section id="reports" class="hidden">
+  <div class="card"><h2>Last 7 days</h2><div class="grid three">
+   <div class="stat"><strong id="weekBusiness">0h</strong><span>Business hours</span></div><div class="stat"><strong id="weekFamily">0m</strong><span>Children + wife</span></div><div class="stat"><strong id="weekPrayer">0/35</strong><span>Salah checked</span></div>
+  </div><div id="weekDays" style="margin-top:12px"></div></div>
+  <div class="card"><h2>Weekly reflection</h2><div class="small">Look for patterns, not a perfect score. What should you keep, stop or change next week?</div><textarea id="weeklyNote" rows="4" placeholder="One improvement for next week..."></textarea><button class="primary" id="saveWeekly" style="margin-top:10px">Save weekly reflection</button></div>
+ </section>
+ <section id="settings" class="hidden">
+  <div class="card"><h2>Your preferences</h2><div class="grid">
+   <div><label>Fajr Jamaat</label><input id="pFajr" value="5:30 AM"></div><div><label>Dhuhr Jamaat</label><input id="pDhuhr" value="1:15 PM"></div><div><label>Asr Jamaat</label><input id="pAsr" value="4:45 PM"></div><div><label>Maghrib Jamaat</label><input id="pMaghrib" value="5:50 PM"></div><div><label>Isha Jamaat</label><input id="pIsha" value="8:15 PM"></div><div><label>Target bedtime</label><input id="pBed" value="9:30 PM"></div>
+  </div><button class="primary" id="saveSettings" style="margin-top:12px;width:100%">Save preferences</button></div>
+  <div class="card"><h2>Backup & privacy</h2><p class="small">Export a JSON backup of your daily logs and settings. The app does not send your data to a server.</p><button class="ghost" id="exportBtn">Export my data</button> <button class="ghost" id="clearBtn">Clear all local data</button></div>
+  <div class="card"><h2>Install on Android</h2><p class="small">After hosting this folder on an HTTPS website, open it in Chrome → menu (⋮) → Add to Home screen / Install app. Offline support becomes available after the first visit.</p></div>
+ </section>
+ <div class="footer">Daily Compass · Personal use · Your data stays in this browser</div>
+</main>
+<script>
+const KEY='dailyCompassV1';
+const defaults={prayers:{Fajr:'5:30 AM',Dhuhr:'1:15 PM',Asr:'4:45 PM',Maghrib:'5:50 PM',Isha:'8:15 PM'},bed:'9:30 PM',logs:{},weeklyNote:''};
+let data=load(), currentDate=iso(new Date()), deferredPrompt=null;
+function load(){try{return {...defaults,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){return structuredClone(defaults)}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(data))}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function dayTypeFor(d){let day=d.getDay();if(day===0||day===6)return'weekend';return [1,3,5].includes(day)?'workshop':'field'}
+function blank(type){return {type,habits:{},prayers:{},businessHours:'',salesOutcome:'',businessNote:'',childrenTime:'',wifeTime:'',exerciseTime:'',sleepHours:'',scrollTime:'',quranTime:'',reflection:''}}
+function todayLog(){return data.logs[currentDate]||(data.logs[currentDate]=blank(dayTypeFor(new Date())))}
+function setVal(id,v){document.getElementById(id).value=v??''}
+function getVal(id){return document.getElementById(id).value}
+const habits=[['Fajr','Fajr prayer'],['Dhuhr','Dhuhr prayer'],['Asr','Asr prayer'],['Maghrib','Maghrib prayer'],['Isha','Isha prayer'],['Masjid','Prayed at masjid (where possible)'],['Quran','Quran reading'],['Exercise','Exercise / movement'],['Children','Quality time with children'],['Wife','Dedicated time with wife']];
+const schedules={
+workshop:[['5:10–5:55','Wake, Fajr at masjid'],['5:55–7:00','Return to sleep / rest'],['7:00–8:25','Exercise, breakfast, children and school preparation'],['8:30–9:00','School drop-off and return'],['9:00–9:50','Workshop setup, planning and urgent messages'],['10:00–12:50','Deep work: CAD, design and production'],['12:50–1:40','Dhuhr and lunch'],['1:40–3:00','Printing, assembly and finishing'],['3:00–3:35','School pickup and return'],['3:35–4:30','Workshop work / quality checks'],['4:30–5:05','Asr'],['5:05–5:35','Production checks and next-day planning'],['5:35–6:10','Maghrib'],['6:10–8:00','Children, dinner and family'],['8:00–8:40','Isha'],['8:40–9:00','Dedicated time with wife'],['9:00–9:15','Quran reading'],['9:15–9:30','Daily review and bedtime']],
+field:[['5:10–5:55','Wake, Fajr at masjid'],['5:55–7:00','Return to sleep / rest'],['7:00–8:25','Exercise, breakfast and family'],['8:30–9:00','School drop-off and return'],['9:00–9:45','Prospect research, calls and route planning'],['9:45–12:45','Builder visits and client meetings'],['12:45–1:40','Dhuhr and lunch'],['1:40–3:00','Nearby meetings or return journey'],['3:00–3:35','School pickup and return'],['3:35–4:30','Quotations, CRM and follow-ups'],['4:30–5:05','Asr'],['5:05–5:35','Sales follow-ups and next actions'],['5:35–6:10','Maghrib'],['6:10–8:00','Children, dinner and family'],['8:00–8:40','Isha'],['8:40–9:00','Dedicated time with wife'],['9:00–9:15','Quran reading'],['9:15–9:30','Daily review and bedtime']],
+weekend:[['5:10–5:55','Fajr at masjid'],['5:55–7:30','Return to sleep / rest'],['7:30–8:15','Exercise and personal care'],['8:15–10:00','Family breakfast and children'],['10:00–11:30','Groceries, errands and household responsibilities'],['11:30–12:45','Family activity or outing'],['12:45–1:40','Dhuhr and lunch'],['1:40–3:30','Rest, family and baby care'],['3:30–4:25','Optional weekly planning / personal time'],['4:25–5:05','Asr'],['5:05–5:35','Children or personal time'],['5:35–6:10','Maghrib'],['6:10–8:00','Family and dinner'],['8:00–8:40','Isha'],['8:40–9:00','Dedicated time with wife'],['9:00–9:15','Quran reading'],['9:15–9:30','Reflection and bedtime']]
+};
+function render(){let log=todayLog();document.getElementById('todayLabel').textContent=new Date(currentDate+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});setVal('dayType',log.type);document.getElementById('dayTypeText').textContent=({workshop:'Design, printing, production and assembly',field:'Builder visits, sales and client meetings',weekend:'Family, rest and optional weekly planning'})[log.type];
+document.getElementById('habitList').innerHTML=habits.map(([k,label])=>`<div class="task"><input type="checkbox" data-habit="${k}" ${log.habits[k]?'checked':''}><span>${label}</span>${['Fajr','Dhuhr','Asr','Maghrib','Isha'].includes(k)?'<span class="meta">Salah</span>':''}</div>`).join('');
+['businessHours','salesOutcome','businessNote','childrenTime','wifeTime','exerciseTime','sleepHours','scrollTime','quranTime','reflection'].forEach(k=>setVal(k,log[k]));
+renderStats();renderRoutine();renderReport();renderSettings()}
+function renderStats(){let l=todayLog(),checked=habits.filter(([k])=>l.habits[k]).length;document.getElementById('doneCount').textContent=checked+'/'+habits.length;document.getElementById('businessHours').textContent=(Number(l.businessHours)||0).toFixed(1)+'h';document.getElementById('familyMinutes').textContent=((Number(l.childrenTime)||0)+(Number(l.wifeTime)||0))+'m';document.getElementById('scrollMinutes').textContent=(Number(l.scrollTime)||0)+'m';document.getElementById('progressBar').style.width=(checked/habits.length*100)+'%';document.getElementById('progressText').textContent=checked===habits.length?'All tracked habits checked. Well done.':`${checked} of ${habits.length} tracked habits completed. A partial day still counts.`}
+function renderRoutine(){let p=data.prayers;document.getElementById('prayerTimes').innerHTML=Object.entries(p).map(([k,v])=>`<div class="row" style="padding:8px 0;border-bottom:1px solid #26364c"><span>${k}</span><strong>${v}</strong></div>`).join('');let t=getVal('routineType')||'workshop';document.getElementById('scheduleList').innerHTML=schedules[t].map(([time,task])=>`<div class="activity"><div class="time">${time}</div><div><h3>${task}</h3></div></div>`).join('')}
+function renderReport(){let days=Array.from({length:7},(_,i)=>{let d=new Date();d.setDate(d.getDate()-6+i);return iso(d)}),logs=days.map(d=>data.logs[d]||blank(dayTypeFor(new Date(d+'T12:00:00'))));let sum=k=>logs.reduce((a,l)=>a+(Number(l[k])||0),0);document.getElementById('weekBusiness').textContent=sum('businessHours').toFixed(1)+'h';document.getElementById('weekFamily').textContent=(sum('childrenTime')+sum('wifeTime'))+'m';let pc=logs.reduce((a,l)=>a+['Fajr','Dhuhr','Asr','Maghrib','Isha'].filter(k=>l.habits[k]).length,0);document.getElementById('weekPrayer').textContent=pc+'/35';document.getElementById('weekDays').innerHTML=days.map((d,i)=>{let l=logs[i],n=habits.filter(([k])=>l.habits[k]).length;return `<div class="row" style="padding:8px 0;border-bottom:1px solid #26364c"><span>${new Date(d+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</span><span class="small">${l.type} · ${n}/${habits.length} habits · ${Number(l.businessHours)||0}h work</span></div>`}).join('');setVal('weeklyNote',data.weeklyNote)}
+function renderSettings(){Object.entries(data.prayers).forEach(([k,v])=>setVal('p'+k,v));setVal('pBed',data.bed)}
+function saveToday(){let l=todayLog();document.querySelectorAll('[data-habit]').forEach(x=>l.habits[x.dataset.habit]=x.checked);['businessHours','salesOutcome','businessNote','childrenTime','wifeTime','exerciseTime','sleepHours','scrollTime','quranTime','reflection'].forEach(k=>l[k]=getVal(k));persist();renderStats();document.getElementById('saveStatus').textContent='Saved on this device · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));['today','routine','reports','settings'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==b.dataset.tab));if(b.dataset.tab==='reports')renderReport();if(b.dataset.tab==='routine')renderRoutine()}));
+document.getElementById('dayType').addEventListener('change',e=>{todayLog().type=e.target.value;persist();render()});
+document.getElementById('routineType').addEventListener('change',renderRoutine);
+document.getElementById('saveBtn').addEventListener('click',saveToday);
+document.getElementById('saveWeekly').addEventListener('click',()=>{data.weeklyNote=getVal('weeklyNote');persist();alert('Weekly reflection saved on this device.')});
+document.getElementById('saveSettings').addEventListener('click',()=>{['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(k=>data.prayers[k]=getVal('p'+k));data.bed=getVal('pBed');persist();renderRoutine();alert('Preferences saved.')});
+document.getElementById('exportBtn').addEventListener('click',()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='daily-compass-backup-'+currentDate+'.json';a.click();URL.revokeObjectURL(a.href)});
+document.getElementById('clearBtn').addEventListener('click',()=>{if(confirm('Permanently clear all Daily Compass data stored in this browser? Export a backup first if needed.')){localStorage.removeItem(KEY);data=structuredClone(defaults);render();alert('Local data cleared.')}});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBtn').hidden=false});
+document.getElementById('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('installBtn').hidden=true});
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+render();
+</script>
+</body></html>

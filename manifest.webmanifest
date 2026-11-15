@@ -1,0 +1,18 @@
+{
+  "name": "Daily Compass \u2013 Personal Routine",
+  "short_name": "Daily Compass",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#101827",
+  "description": "Track Salah, SAMATIC work, family, health and personal development.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
